@@ -1,6 +1,7 @@
 package apiserver
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,10 +26,10 @@ func New(conf *Config) *APIServer {
 
 // Start Starts server
 func (s *APIServer) Start() error {
-	if err := s.configureStore(); err != nil {
+	if err := s.configureLogger(); err != nil {
 		panic(err)
 	}
-	if err := s.configureLogger(); err != nil {
+	if err := s.configureStore(); err != nil {
 		panic(err)
 	}
 	s.configureRouter()
@@ -66,13 +67,13 @@ func (s *APIServer) configureRouter() {
 }
 
 func (s *APIServer) configureStore() error {
-	st := store.New(s.config.Store)
+	db, err := sql.Open("postgres", s.config.DatabaseURL)
 
-	if err := st.Open(); err != nil {
+	if err != nil {
 		return err
 	}
-	s.store = st
-	return nil
+
+	return db.Ping()
 }
 
 // LogMiddleware instance a Logger middleware with config.

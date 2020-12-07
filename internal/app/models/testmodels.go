@@ -10,3 +10,11 @@ func TestUser(t *testing.T) *User {
 		Password: "some password",
 	}
 }
+
+// TestDeck ..
+func TestDeck(t *testing.T) *Deck {
+	t.Helper()
+	return &Deck{
+		Name: "First collection",
+	}
+}

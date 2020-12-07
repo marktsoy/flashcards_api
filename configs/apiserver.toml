@@ -3,5 +3,4 @@ bind_addr = "localhost:3333"
 logger = "dev"
 log_path = "apiserver.log"
 
-[store]
 database_url = "host=localhost dbname=flashcards sslmode=disable"
