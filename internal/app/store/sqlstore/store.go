@@ -2,6 +2,8 @@ package sqlstore
 
 import (
 	"database/sql"
+
+	"github.com/marktsoy/flashcards_api/internal/app/store"
 )
 
 // SQLStore ...
@@ -23,7 +25,7 @@ func New(db *sql.DB) *SQLStore {
 **/
 
 // User ...
-func (s *SQLStore) User() *UserRepository {
+func (s *SQLStore) User() store.UserRepository {
 	if s.userRepository == nil {
 		s.userRepository = &UserRepository{
 			store: s,
@@ -33,7 +35,7 @@ func (s *SQLStore) User() *UserRepository {
 }
 
 // Deck ...
-func (s *SQLStore) Deck() *DeckRepository {
+func (s *SQLStore) Deck() store.DeckRepository {
 	if s.deckRepository == nil {
 		s.deckRepository = &DeckRepository{
 			store: s,

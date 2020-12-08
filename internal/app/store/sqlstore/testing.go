@@ -20,15 +20,15 @@ func TestStore(t *testing.T, databaseURL string) (*SQLStore, func(...string)) {
 		t.Fatal(err)
 	}
 
-	store := New(db)
+	s := New(db)
 
-	return store, func(tablenames ...string) {
+	return s, func(tablenames ...string) {
 		if len(tablenames) > 0 {
-			if _, err := store.db.Exec(fmt.Sprintf("TRUNCATE  %v  CASCADE", strings.Join(tablenames, ", "))); err != nil {
+			if _, err := s.db.Exec(fmt.Sprintf("TRUNCATE  %v  CASCADE", strings.Join(tablenames, ", "))); err != nil {
 				t.Fatal(err)
 			}
 			fmt.Printf("Cleared %v", strings.Join(tablenames, ", "))
 		}
-		store.db.Close()
+		s.db.Close()
 	}
 }

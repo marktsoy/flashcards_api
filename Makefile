@@ -12,8 +12,8 @@ migrate:
 	migrate -database postgres://localhost/flashcards_test?sslmode=disable -path migrations up
 
 
-.PHONY: rollback
-rollback:
+.PHONY: resetdb
+resetdb:
 	migrate -database postgres://localhost/flashcards?sslmode=disable -path migrations down
 	migrate -database postgres://localhost/flashcards_test?sslmode=disable -path migrations down
 

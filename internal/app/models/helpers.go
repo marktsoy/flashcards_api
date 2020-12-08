@@ -1,21 +1,11 @@
 package models
 
 import (
-	"crypto/md5"
-	"encoding/hex"
-	"io"
+	"math/rand"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
-
-// Md5 ...
-func Md5(items ...string) string {
-	h := md5.New()
-	for _, s := range items {
-		io.WriteString(h, s)
-	}
-	return hex.EncodeToString(h.Sum(nil))
-}
 
 func encryptPassword(s string) (string, error) {
 	b, err := bcrypt.GenerateFromPassword([]byte(s), bcrypt.MinCost)
@@ -23,4 +13,20 @@ func encryptPassword(s string) (string, error) {
 		return "", err
 	}
 	return string(b), nil
+}
+
+const charset = "abcdefghijklmnopqrstuvwxyz" +
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+// Create new math/rand.Rand struct that will generate random int
+var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+// RandomString generates random string of length passed
+// Uses charset and seedRand
+func RandomString(length int) string {
+	b := make([]byte, length)
+	for i := 0; i < length; i++ {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
 }

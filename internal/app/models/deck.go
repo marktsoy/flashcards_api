@@ -1,10 +1,5 @@
 package models
 
-import (
-	"strconv"
-	"time"
-)
-
 // Deck ...
 type Deck struct {
 	ID     string
@@ -20,7 +15,7 @@ func (d *Deck) Creating() {
 		d.UserID = d.user.ID
 	}
 	if d.ID == "" {
-		d.ID = Md5(time.Now().String(), d.Name, strconv.Itoa(d.UserID))
+		d.ID = RandomString(32)
 	}
 }
 
