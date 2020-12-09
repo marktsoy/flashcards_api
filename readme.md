@@ -2,8 +2,9 @@
 
 ## Diffs:
 
-- Use Gin instead of Gorilla Mux
+- Use Gin
 - Use Zap instead of Logrus
+  - How to substitue Gin inner logger? Looks like it is harcoded into Gin Engine.
 - Entities:
   - User
   - Deck
