@@ -28,12 +28,13 @@ func main() {
 	flag.Parse()
 	var config *apiserver.Config = apiserver.NewConfig()
 	_, err := toml.DecodeFile(configPath, config)
+
+	log.Println(config.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	s := apiserver.New(config)
-	if err := s.Start(); err != nil {
+	if err := apiserver.Start(config); err != nil {
 		log.Fatal(err)
 	}
 }

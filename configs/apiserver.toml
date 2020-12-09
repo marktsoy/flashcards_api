@@ -3,4 +3,4 @@ bind_addr = "localhost:3333"
 logger = "dev"
 log_path = "apiserver.log"
 
-database_url = "host=localhost dbname=flashcards sslmode=disable"
+store = "postgres://localhost/flashcards?sslmode=disable"

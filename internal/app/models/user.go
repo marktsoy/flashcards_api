@@ -2,10 +2,10 @@ package models
 
 // User Model
 type User struct {
-	ID                int
-	Email             string
-	Password          string
-	EncryptedPassword string
+	ID                int    `json:"id"`
+	Email             string `json:"email"`
+	Password          string `json:"-"`
+	EncryptedPassword string `json:"-"`
 }
 
 // Creating ...
