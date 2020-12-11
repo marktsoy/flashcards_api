@@ -50,3 +50,23 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 
 	return &u, nil
 }
+
+func (r *UserRepository) FindAll() ([]*models.User, error) {
+	users := []*models.User{}
+
+	rows, err := r.store.db.Query("SELECT id,email FROM users")
+	if err != nil {
+		return nil, store.ErrCanNotGetResults
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		user := &models.User{}
+		if err := rows.Scan(&user.ID, &user.Email); err != nil {
+			return nil, store.ErrCanNotGetResults
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}

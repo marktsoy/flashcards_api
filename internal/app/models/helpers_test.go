@@ -19,3 +19,17 @@ func TestHelper_RandomString(t *testing.T) {
 		assert.Equal(t, 1, n)
 	}
 }
+
+func TestHelper_CheckPassword(t *testing.T) {
+
+	st := []string{
+		"qwerty123",
+		"bc123123123",
+		"anythinEls",
+	}
+	for _, s := range st {
+		enc, _ := models.EncryptPassword(s)
+		err := models.CheckPassword(enc, s)
+		assert.NoError(t, err)
+	}
+}

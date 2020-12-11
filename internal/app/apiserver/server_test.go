@@ -105,6 +105,64 @@ func TestServer_UserCreate(t *testing.T) {
 		}
 	}
 }
+func TestServer_UserCreateValidationErrors(t *testing.T) {
+
+	testCases := []struct {
+		expectedCode int
+		data         map[string]interface{}
+		response     map[string]map[string]string
+	}{
+		{
+			expectedCode: 422,
+			data: map[string]interface{}{
+				"email":                 "nonemail.com",
+				"password":              "qwerty123",
+				"password_confirmation": "",
+			},
+			response: map[string]map[string]string{
+				"error": {
+					"Email": "Email must be valid Email",
+				},
+			},
+		},
+		{
+			expectedCode: 422,
+			data: map[string]interface{}{
+				"email":                 "nonemailmecom",
+				"password":              "passwr",
+				"password_confirmation": "",
+			},
+			response: map[string]map[string]string{
+				"error": {
+					"Password": "Password is too short, accepted length: 8",
+					"Email":    "Email must be valid Email",
+				},
+			},
+		},
+	}
+
+	srv := apiserver.TestServer(t)
+
+	for _, tc := range testCases {
+		w := httptest.NewRecorder()
+		reqJson, err := json.Marshal(tc.data)
+		if err != nil {
+			panic(err)
+		}
+
+		req, _ := http.NewRequest("POST", "/users/", bytes.NewReader(reqJson))
+		req.Header.Add("Content-Type", "application/json") // Should bind json return error otherwise
+
+		srv.ServeHTTP(w, req)
+
+		assert.Equal(t, tc.expectedCode, w.Code)
+		body := w.Body.String()
+		for _, msg := range tc.response["error"] {
+			assert.Contains(t, body, msg)
+		}
+
+	}
+}
 
 //TestServer_NotExactURL expects request to /users to be redirected to /users/
 func TestServer_NotExactURL(t *testing.T) {

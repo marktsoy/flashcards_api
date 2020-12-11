@@ -10,10 +10,15 @@ type User struct {
 
 // Creating ...
 func (u *User) Creating() error {
-	s, err := encryptPassword(u.Password)
+	s, err := EncryptPassword(u.Password)
 	if err != nil {
 		return err
 	}
 	u.EncryptedPassword = s
 	return nil
+}
+
+// CheckPassword ...
+func (u *User) CheckPassword(c string) error {
+	return CheckPassword(u.EncryptedPassword, c)
 }

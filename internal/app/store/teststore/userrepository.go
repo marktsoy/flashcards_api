@@ -33,3 +33,13 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	}
 	return u, nil
 }
+
+func (r *UserRepository) FindAll() ([]*models.User, error) {
+	users := []*models.User{}
+
+	for _, u := range r.users {
+		users = append(users, u)
+	}
+
+	return users, nil
+}

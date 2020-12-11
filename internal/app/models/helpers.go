@@ -7,12 +7,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func encryptPassword(s string) (string, error) {
+func EncryptPassword(s string) (string, error) {
 	b, err := bcrypt.GenerateFromPassword([]byte(s), bcrypt.MinCost)
 	if err != nil {
 		return "", err
 	}
 	return string(b), nil
+}
+
+func CheckPassword(hashedPassword string, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }
 
 const charset = "abcdefghijklmnopqrstuvwxyz" +

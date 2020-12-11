@@ -40,3 +40,21 @@ func TestUser_FindByEmailNotFound(t *testing.T) {
 	assert.Error(t, err, store.ErrRecordNotFound)
 	assert.Nil(t, user)
 }
+
+func TestUser_FindAll(t *testing.T) {
+	s, clear := sqlstore.TestStore(t, databaseURL)
+	defer clear("users")
+	testUsers := []*models.User{
+		{Email: "my@me.at", Password: "qwerty123123"},
+		{Email: "mysecondUser@me.at", Password: "qwerty123123"},
+		{Email: "my3rdUser@me.at", Password: "qwerty123123"},
+	}
+	for _, u := range testUsers {
+		s.User().Create(u)
+	}
+	users, err := s.User().FindAll()
+
+	assert.NoError(t, err)
+	assert.IsType(t, []*models.User{}, users)
+	assert.Equal(t, len(users), len(testUsers))
+}
