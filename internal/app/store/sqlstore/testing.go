@@ -27,7 +27,7 @@ func TestStore(t *testing.T, databaseURL string) (*SQLStore, func(...string)) {
 			if _, err := s.db.Exec(fmt.Sprintf("TRUNCATE  %v  CASCADE", strings.Join(tablenames, ", "))); err != nil {
 				t.Fatal(err)
 			}
-			fmt.Printf("Cleared %v", strings.Join(tablenames, ", "))
+			fmt.Printf("--- Cleared tables %v", strings.Join(tablenames, ", "))
 		}
 		s.db.Close()
 	}

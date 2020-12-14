@@ -8,9 +8,17 @@ import (
 	"github.com/marktsoy/flashcards_api/internal/app/validation"
 )
 
+// TestIndex ...
 func TestIndex() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		io.WriteString(ctx.Writer, "Testing is ok")
+	}
+}
+
+func (s *server) me() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user := getUser(c)
+		c.JSON(200, user)
 	}
 }
 
@@ -54,7 +62,7 @@ func (s *server) createUser() gin.HandlerFunc {
 			valErrors["Password"] = msg
 		}
 		if r.PasswordConfirmation != r.Password {
-			valErrors["PasswordConfrimtaion"] = "Passwords does not match"
+			valErrors["PasswordConfirmation"] = "Passwords does not match"
 		}
 
 		if len(valErrors) > 0 {

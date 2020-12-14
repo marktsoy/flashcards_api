@@ -34,6 +34,7 @@ func LogMiddleware(logger *zap.SugaredLogger) gin.HandlerFunc {
 	}
 }
 
+// OnlyJSON ...
 func OnlyJSON(c *gin.Context) {
 	if contentType := c.Request.Header.Get("Content-Type"); contentType != "application/json" {
 		c.AbortWithStatusJSON(http.StatusUnsupportedMediaType, gin.H{
@@ -71,12 +72,9 @@ func BasicAuth(store store.Store) gin.HandlerFunc {
 			authErr(c)
 			return
 		}
+
+		setUser(c, user)
+
 		c.Next()
 	}
-}
-
-func authErr(c *gin.Context) {
-	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-		"error": "Unauthorized",
-	})
 }
