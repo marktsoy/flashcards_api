@@ -18,9 +18,18 @@ func (s *server) configureRouter() {
 		userHandlers.GET("/me", authMiddleware, s.me())
 	}
 
+	deckHandlers := s.router.Group("/deck")
+	deckHandlers.Use(authMiddleware)
+	{
+		deckHandlers.POST("/", s.createDeck())
+		deckHandlers.PUT("/:id", s.updateDeck())
+		deckHandlers.PUT("/", s.updateDeck())
+	}
+
 	authProtectedRoute := s.router.Group("/test")
 	{
 		authProtectedRoute.POST("/", TestIndex())
 		authProtectedRoute.GET("/", TestIndex())
 	}
+
 }

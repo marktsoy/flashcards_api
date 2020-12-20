@@ -13,4 +13,12 @@ type UserRepository interface {
 type DeckRepository interface {
 	Create(*models.Deck) error
 	FindByID(id string) (*models.Deck, error)
+	Update(*models.Deck) error
+	Delete(*models.Deck) error
+}
+
+// CardRepository ...
+type CardRepository interface {
+	Create(*models.Card) error
+	FindAllByDeck(*models.Deck) ([]*models.Card, error)
 }

@@ -11,6 +11,7 @@ type SQLStore struct {
 	db             *sql.DB
 	userRepository *UserRepository
 	deckRepository *DeckRepository
+	cardRepository *CardRepository
 }
 
 // New ...
@@ -42,4 +43,14 @@ func (s *SQLStore) Deck() store.DeckRepository {
 		}
 	}
 	return s.deckRepository
+}
+
+// Deck ...
+func (s *SQLStore) Card() store.CardRepository {
+	if s.cardRepository == nil {
+		s.cardRepository = &CardRepository{
+			store: s,
+		}
+	}
+	return s.cardRepository
 }

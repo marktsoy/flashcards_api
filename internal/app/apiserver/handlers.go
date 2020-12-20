@@ -2,6 +2,7 @@ package apiserver
 
 import (
 	"io"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/marktsoy/flashcards_api/internal/app/models"
@@ -15,6 +16,7 @@ func TestIndex() gin.HandlerFunc {
 	}
 }
 
+// Get current user
 func (s *server) me() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := getUser(c)
@@ -85,6 +87,97 @@ func (s *server) createUser() gin.HandlerFunc {
 		}
 
 		c.JSON(201, u)
+		return
+	}
+}
+
+func (s *server) createDeck() gin.HandlerFunc {
+	type req struct {
+		Name string `json:"name" `
+	}
+	return func(c *gin.Context) {
+		user := getUser(c)
+		r := &req{}
+
+		if err := c.ShouldBind(r); err != nil {
+			c.AbortWithStatusJSON(422, gin.H{
+				"error": "Invalid request",
+			})
+			return
+		}
+		valErrors := gin.H{}
+		if ok, msg := validation.MinLen("Name", r.Name, 1, "Name is required"); !ok {
+			valErrors["Name"] = msg
+		}
+		if len(valErrors) > 0 {
+			c.AbortWithStatusJSON(422, gin.H{
+				"error": valErrors,
+			})
+			return
+		}
+
+		d := &models.Deck{
+			Name: r.Name,
+		}
+		d.BindUser(user)
+
+		if err := s.store.Deck().Create(d); err != nil {
+			c.AbortWithStatusJSON(500, gin.H{
+				"error": "Could not create deck",
+			})
+			return
+		}
+
+		c.JSON(201, d)
+		return
+	}
+}
+
+func (s *server) updateDeck() gin.HandlerFunc {
+	type req struct {
+		Name string `json:"name" `
+	}
+	return func(c *gin.Context) {
+		user := getUser(c)
+		id := c.Param("id")
+		r := &req{}
+		d, err := s.store.Deck().FindByID(id)
+		if err != nil {
+			c.AbortWithStatusJSON(422, gin.H{
+				"error": "Deck:" + id + " was not found",
+			})
+			return
+		}
+		if d.UserID != user.ID {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "Not authorized",
+			})
+			return
+		}
+		if err := c.ShouldBind(r); err != nil {
+			c.AbortWithStatusJSON(422, gin.H{
+				"error": "Invalid request",
+			})
+			return
+		}
+		valErrors := gin.H{}
+		if ok, msg := validation.MinLen("Name", r.Name, 1, "Name is required"); !ok {
+			valErrors["Name"] = msg
+			c.AbortWithStatusJSON(422, gin.H{
+				"error": valErrors,
+			})
+			return
+		}
+		d.Name = r.Name
+
+		if err := s.store.Deck().Update(d); err != nil {
+			c.AbortWithStatusJSON(500, gin.H{
+				"error": "Could not update deck",
+			})
+			return
+		}
+
+		c.JSON(200, d)
 		return
 	}
 }

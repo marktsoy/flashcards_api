@@ -13,6 +13,7 @@ import (
 type Teststore struct {
 	userRepository *UserRepository
 	deckRepository *DeckRepository
+	cardRepository *CardRepository
 }
 
 // New Teststore ...
@@ -38,4 +39,14 @@ func (t *Teststore) Deck() store.DeckRepository {
 		}
 	}
 	return t.deckRepository
+}
+
+// Card ...
+func (t *Teststore) Card() store.CardRepository {
+	if t.cardRepository == nil {
+		t.cardRepository = &CardRepository{
+			cards: make(map[int]*models.Card, 0),
+		}
+	}
+	return t.cardRepository
 }

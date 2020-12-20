@@ -2,12 +2,14 @@ package apiserver_test
 
 import (
 	"bytes"
+	b64 "encoding/base64"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/marktsoy/flashcards_api/internal/app/apiserver"
+	"github.com/marktsoy/flashcards_api/internal/app/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -182,6 +184,85 @@ func TestServer_UserCreateValidationErrors(t *testing.T) {
 		for _, msg := range tc.response["error"] {
 			assert.Contains(t, body, msg)
 		}
-
 	}
+}
+
+func TestServer_DeckCreate(t *testing.T) {
+
+	testCases := []struct {
+		expectedCode int
+		data         string
+		auth         bool
+		response     string
+	}{
+		{
+			expectedCode: 201,
+			data:         "NEWDECK",
+			auth:         true,
+			response:     "\"name\":\"NEWDECK\"",
+		},
+	}
+	srv := apiserver.TestServer(t)
+
+	// Creating and Retrieving user
+	userModel := &models.User{}
+	{
+		user := struct {
+			expectedCode int
+			data         map[string]interface{}
+			response     string
+		}{
+			expectedCode: 201,
+			data: map[string]interface{}{
+				"email":                 "myemail@example.com",
+				"password":              "qwerty123",
+				"password_confirmation": "qwerty123",
+			},
+			response: "\"email\":\"myemail@example.com\"",
+		}
+		w := httptest.NewRecorder()
+		reqJson, err := json.Marshal(user.data)
+		if err != nil {
+			panic(err)
+		}
+		req, _ := http.NewRequest("POST", "/users/", bytes.NewReader(reqJson))
+		req.Header.Add("Content-Type", "application/json") // Should bind json return error otherwise
+		srv.ServeHTTP(w, req)
+		assert.Equal(t, user.expectedCode, w.Code)
+		body := w.Body
+		err = json.Unmarshal(body.Bytes(), userModel)
+		if err != nil {
+			panic(err)
+		}
+	}
+	for _, tc := range testCases {
+		wData := map[string]string{
+			"name": tc.data,
+		}
+		w := httptest.NewRecorder()
+		reqJson, err := json.Marshal(wData)
+		if err != nil {
+			panic(err)
+		}
+
+		req, _ := http.NewRequest("POST", "/deck/", bytes.NewReader(reqJson))
+		req.Header.Add("Content-Type", "application/json") // Should bind json return error otherwise
+		if tc.auth {
+			req.Header.Add("Authorization", authHeader(t, "myemail@example.com", "qwerty123"))
+		}
+
+		srv.ServeHTTP(w, req)
+
+		assert.Equal(t, tc.expectedCode, w.Code)
+		body := w.Body.String()
+		assert.Contains(t, body, tc.response)
+	}
+}
+
+func authHeader(t *testing.T, email string, password string) string {
+	t.Helper()
+
+	sEnc := b64.StdEncoding.EncodeToString([]byte(email + ":" + password))
+
+	return "Basic " + sEnc
 }

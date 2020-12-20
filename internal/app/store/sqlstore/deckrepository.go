@@ -43,3 +43,43 @@ func (r *DeckRepository) FindByID(id string) (*models.Deck, error) {
 	}
 	return d, nil
 }
+
+// Update ...
+func (r *DeckRepository) Update(d *models.Deck) error {
+	db := r.store.db
+
+	sqlStatement := "UPDATE decks SET name=$2 where decks.id = $1 "
+	res, err := db.Exec(sqlStatement, d.ID, d.Name)
+	if err != nil {
+		return err
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return store.ErrRecordNotFound
+	}
+	return nil
+}
+
+// Delete ...
+func (r *DeckRepository) Delete(d *models.Deck) error {
+	db := r.store.db
+	if d.ID == "" {
+		return store.ErrRecordNotFound
+	}
+	sqlStatement := "DELETE FROM decks WHERE decks.id = $1 "
+	res, err := db.Exec(sqlStatement, d.ID)
+	if err != nil {
+		return err
+	}
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return store.ErrRecordNotFound
+	}
+	return nil
+}

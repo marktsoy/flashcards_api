@@ -26,3 +26,21 @@ func (r *DeckRepository) FindByID(id string) (*models.Deck, error) {
 	}
 	return d, nil
 }
+
+// Update ...
+func (r *DeckRepository) Update(d *models.Deck) error {
+	if _, ok := r.decks[d.ID]; !ok {
+		return store.ErrRecordNotFound
+	}
+	r.decks[d.ID] = d
+	return nil
+}
+
+// Delete ...
+func (r *DeckRepository) Delete(d *models.Deck) error {
+	if _, ok := r.decks[d.ID]; !ok {
+		return store.ErrRecordNotFound
+	}
+	delete(r.decks, d.ID)
+	return nil
+}
