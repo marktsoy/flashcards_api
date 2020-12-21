@@ -21,4 +21,7 @@ type DeckRepository interface {
 type CardRepository interface {
 	Create(*models.Card) error
 	FindAllByDeck(*models.Deck) ([]*models.Card, error)
+	FindByID(id int) (*models.Card, error)
+	Update(*models.Card) error
+	Delete(*models.Card) error
 }

@@ -1,6 +1,11 @@
 package teststore
 
-import "github.com/marktsoy/flashcards_api/internal/app/models"
+import (
+	"errors"
+
+	"github.com/marktsoy/flashcards_api/internal/app/models"
+	"github.com/marktsoy/flashcards_api/internal/app/store"
+)
 
 // CardRepository ...
 type CardRepository struct {
@@ -25,4 +30,33 @@ func (rep *CardRepository) FindAllByDeck(deck *models.Deck) ([]*models.Card, err
 		records = append(records, card)
 	}
 	return records, nil
+}
+
+// FindByID ...
+func (rep *CardRepository) FindByID(id int) (*models.Card, error) {
+	card, ok := rep.cards[id]
+	if !ok {
+		return nil, store.ErrRecordNotFound
+	}
+	return card, nil
+}
+
+// Update ...
+func (rep *CardRepository) Update(card *models.Card) error {
+	_, ok := rep.cards[card.ID]
+	if !ok {
+		return store.ErrRecordNotFound
+	}
+	rep.cards[card.ID] = card
+	return nil
+}
+
+// Delete ...
+func (rep *CardRepository) Delete(card *models.Card) error {
+	_, ok := rep.cards[card.ID]
+	if !ok {
+		return errors.New("Nothing was deleted")
+	}
+	delete(rep.cards, card.ID)
+	return nil
 }

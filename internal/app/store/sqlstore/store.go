@@ -45,7 +45,7 @@ func (s *SQLStore) Deck() store.DeckRepository {
 	return s.deckRepository
 }
 
-// Deck ...
+// Card ...
 func (s *SQLStore) Card() store.CardRepository {
 	if s.cardRepository == nil {
 		s.cardRepository = &CardRepository{

@@ -9,8 +9,11 @@ type Card struct {
 	Answer    string    `json:"answer"`
 	CreatedAt time.Time `json:"created_at"`
 	DeckID    string    `json:"deck_id"`
+
+	Deck *Deck `json:"-"`
 }
 
+// Creating ...
 func (c *Card) Creating() {
 	c.CreatedAt = time.Now()
 }

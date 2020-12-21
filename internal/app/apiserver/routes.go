@@ -18,18 +18,22 @@ func (s *server) configureRouter() {
 		userHandlers.GET("/me", authMiddleware, s.me())
 	}
 
-	deckHandlers := s.router.Group("/deck")
+	deckHandlers := s.router.Group("/decks")
 	deckHandlers.Use(authMiddleware)
 	{
 		deckHandlers.POST("/", s.createDeck())
 		deckHandlers.PUT("/:id", s.updateDeck())
-		deckHandlers.PUT("/", s.updateDeck())
+		deckHandlers.GET("/:id", s.getDeck())
+		deckHandlers.DELETE("/:id", s.destroyDeck())
 	}
 
-	authProtectedRoute := s.router.Group("/test")
+	cardHandlers := s.router.Group("/cards")
+	cardHandlers.Use(authMiddleware)
 	{
-		authProtectedRoute.POST("/", TestIndex())
-		authProtectedRoute.GET("/", TestIndex())
+		cardHandlers.GET("/:deck", s.getCards())
+		cardHandlers.POST("/", s.createCard())
+		cardHandlers.PUT("/:id", s.updateCard())
+		cardHandlers.DELETE("/:id", s.destroyCard())
 	}
 
 }
